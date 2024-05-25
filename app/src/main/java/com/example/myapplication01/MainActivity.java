@@ -13,6 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -52,87 +55,61 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        //初始化控件
-        mViewPager=findViewById(R.id.viewpager);
-        mRadioGroup=findViewById(R.id.rg_tab);
-        tab1=findViewById(R.id.rb_attraction);
-        tab2=findViewById(R.id.rb_facility);
-        tab3=findViewById(R.id.rb_food);
-        tab4=findViewById(R.id.rb_radio);
+        // 初始化控件
+        mViewPager = findViewById(R.id.viewpager);
+        mRadioGroup = findViewById(R.id.rg_tab);
+        tab1 = findViewById(R.id.rb_attraction);
+        tab2 = findViewById(R.id.rb_facility);
+        tab3 = findViewById(R.id.rb_food);
+        tab4 = findViewById(R.id.rb_radio);
 
-        mViews=new ArrayList<View>();//加载，添加视图
-        mViews.add(LayoutInflater.from(this).inflate(R.layout.activity_attraction,null));
-        mViews.add(LayoutInflater.from(this).inflate(R.layout.layout_facility,null));
-        mViews.add(LayoutInflater.from(this).inflate(R.layout.layout_food,null));
-        mViews.add(LayoutInflater.from(this).inflate(R.layout.layout_radio,null));
+        // 创建Fragment列表
+        List<Fragment> fragments = new ArrayList<>();
+        fragments.add(new AttractionFragment());
+        fragments.add(new FacilityFragment());
+        fragments.add(new FoodFragment());
+        fragments.add(new RadioFragment());
 
-        mViewPager.setAdapter(new MyViewPagerAdapter());//设置一个适配器
-        //对viewpager监听，让分页和底部图标保持一起滑动
-        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        // 设置适配器
+        MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), fragments);
+        mViewPager.setAdapter(adapter);
+
+        // 对ViewPager监听，让分页和底部图标保持一起滑动
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                // 此方法可以留空
             }
-            @Override   //让viewpager滑动的时候，下面的图标跟着变动
+
+            @Override // 让ViewPager滑动的时候，下面的图标跟着变动
             public void onPageSelected(int position) {
-                switch (position) {
-                    case 0:
-                        tab1.setChecked(true);
-                        tab2.setChecked(false);
-                        tab3.setChecked(false);
-                        tab4.setChecked(false);
-                        break;
-                    case 1:
-                        tab1.setChecked(false);
-                        tab2.setChecked(true);
-                        tab3.setChecked(false);
-                        tab4.setChecked(false);
-                        break;
-                    case 2:
-                        tab1.setChecked(false);
-                        tab2.setChecked(false);
-                        tab3.setChecked(true);
-                        tab4.setChecked(false);
-                        break;
-                    case 3:
-                        tab1.setChecked(false);
-                        tab2.setChecked(false);
-                        tab3.setChecked(false);
-                        tab4.setChecked(true);
-                        break;
-                }
+                mRadioGroup.check(mRadioGroup.getChildAt(position).getId());
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
+                // 此方法可以留空
             }
         });
     }
 
-    //ViewPager适配器
-    private class MyViewPagerAdapter extends PagerAdapter {
+    // ViewPager适配器
+    private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+        private List<Fragment> fragmentList;
+
+        public MyFragmentPagerAdapter(FragmentManager fm, List<Fragment> fragments) {
+            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+            this.fragmentList = fragments;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragmentList.get(position);
+        }
+
         @Override
         public int getCount() {
-            return mViews.size();
-        }
-
-
-        @Override
-        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-            return view==object;
-        }
-
-        @Override
-        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-            container.removeView(mViews.get(position));
-        }
-
-        @NonNull
-        @Override
-        public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            container.addView(mViews.get(position));
-            return mViews.get(position);
+            return fragmentList.size();
         }
     }
 
