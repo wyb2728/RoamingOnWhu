@@ -3,12 +3,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RadioFragment">
-
+    tools:context=".RadioFragment"
+    android:background="@color/radioBackground">
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:contentDescription="@string/radio_icon"
+        android:scaleType="fitXY"
+        android:layout_gravity="center"
+        android:src="@drawable/radiopage_icon"
+        android:layout_marginTop="-100dp"
+        />
+    <EditText
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:hint="@string/enter_your_id"
+        android:background="@drawable/textview_borderline"
+        android:singleLine="true"
+        android:gravity="center"
+        />
+   <EditText
+       android:layout_width="200dp"
+       android:layout_height="40dp"
+       android:layout_gravity="center"
+       android:layout_marginTop="80dp"
+       android:hint="@string/enter_your_key"
+       android:inputType="number"
+       android:background="@drawable/textview_borderline"
+       android:singleLine="true"
+       android:gravity="center"
+       />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_marginTop="160dp"
+        android:text="@string/enter"
+        android:textSize="20sp"
+        />
 
 </FrameLayout>
