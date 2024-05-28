@@ -23,9 +23,9 @@ public class FacilityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_attraction, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_facilicty, container, false);
         // 获取地图控件引用
-        mMapView = (MapView) rootView.findViewById(R.id.amapView);
+        mMapView = (MapView) rootView.findViewById(R.id.amapView1);
         // 在fragment执行onCreateView时执行mMapView.onCreate(savedInstanceState)，创建地图
         mMapView.onCreate(savedInstanceState);
         if (aMap == null) {

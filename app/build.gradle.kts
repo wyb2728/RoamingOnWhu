@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(files("lib\\AMap3DMap_10.0.700_AMapSearch_9.7.2_AMapLocation_6.4.5_20240508.jar"))
     implementation(files("lib\\Amap_2DMap_V6.0.0_20191106.jar"))
+    implementation ("pub.devrel:easypermissions:3.0.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
