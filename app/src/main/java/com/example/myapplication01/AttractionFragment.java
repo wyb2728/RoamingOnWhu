@@ -20,15 +20,16 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class AttractionFragment extends Fragment implements AMapLocationListener {
-    MapView mMapView = null;
-    // 初始化地图控制器对象
+public class AttractionFragment extends Fragment implements AMapLocationListener,LocationSource{
+    MapView mapView = null;
     AMap aMap;
+    private LocationSource.OnLocationChangedListener mListener;
     private TextView tvContent;
     private static final int REQUEST_PERMISSIONS = 9527;
     //声明AMapLocationClient类对象
@@ -42,17 +43,19 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_attraction, container, false);
-
-        tvContent =getActivity().findViewById(R.id.tv_content0);
+        mapView = (MapView) rootView.findViewById(R.id.amapView0);
+        // 在fragment执行onCreateView时执行mMapView.onCreate(savedInstanceState)，创建地图
+        mapView.onCreate(savedInstanceState);
+        if (aMap == null) {
+            aMap = mapView.getMap();
+        }
+        // 设置定位监听
+        aMap.setLocationSource(this);
+        // 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
+        aMap.setMyLocationEnabled(true);
+        tvContent =rootView.findViewById(R.id.tv_content0);
         initLocation();
         checkingAndroidVersion();
-        // 获取地图控件引用
-        mMapView = (MapView) rootView.findViewById(R.id.amapView0);
-        // 在fragment执行onCreateView时执行mMapView.onCreate(savedInstanceState)，创建地图
-        mMapView.onCreate(savedInstanceState);
-        if (aMap == null) {
-            aMap = mMapView.getMap();
-        }
         return rootView;
     }
 
@@ -60,32 +63,30 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
     public void onDestroy() {
         super.onDestroy();
         // 在fragment执行onDestroy时执行mMapView.onDestroy()，销毁地图
-        mMapView.onDestroy();
+        mapView.onDestroy();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         // 在fragment执行onResume时执行mMapView.onResume()，重新绘制加载地图
-        mMapView.onResume();
+        mapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         // 在fragment执行onPause时执行mMapView.onPause()，暂停地图的绘制
-        mMapView.onPause();
+        mapView.onPause();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // 在fragment执行onSaveInstanceState时执行mMapView.onSaveInstanceState(outState)，保存地图当前的状态
-        mMapView.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
     }
-    /**
-     * 检查Android版本
-     */
+
     private void checkingAndroidVersion() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             //Android6.0及以上先获取权限再定位
@@ -149,7 +150,14 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
             if (aMapLocation.getErrorCode() == 0) {
                 //地址
                 String address = aMapLocation.getAddress();
+                Log.d("Location", "定位成功，地址：" + address);
                 tvContent.setText(address == null ? "无地址" : address);
+
+                mLocationClient.startLocation();
+
+                if(mListener!=null){
+                    mListener.onLocationChanged(aMapLocation);
+                }
             } else {
                 //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                 Log.e("AmapError", "location Error, ErrCode:"
@@ -157,5 +165,24 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
                         + aMapLocation.getErrorInfo());
             }
         }
+    }
+
+
+    @Override
+    public void activate(OnLocationChangedListener onLocationChangedListener) {
+        mListener = onLocationChangedListener;
+        if (mLocationClient != null) {
+            mLocationClient.startLocation();//启动定位
+        }
+    }
+
+    @Override
+    public void deactivate() {
+        mListener = null;
+        if (mLocationClient != null) {
+            mLocationClient.stopLocation();
+            mLocationClient.onDestroy();
+        }
+        mLocationClient = null;
     }
 }
