@@ -23,6 +23,17 @@ import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
 
+import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.LatLngBounds;
+import com.amap.api.maps2d.model.Marker;
+import com.amap.api.maps2d.model.MarkerOptions;
+import com.amap.api.maps2d.model.Text;
+import com.amap.api.maps2d.model.TextOptions;
+import com.amap.api.maps2d.AMap.OnMapClickListener;
+import com.amap.api.maps2d.CameraUpdate;
+import com.amap.api.maps2d.AMap.OnCameraChangeListener;
+import com.amap.api.maps2d.CameraUpdateFactory;
+
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -37,6 +48,12 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
     //声明AMapLocationClientOption对象
     public AMapLocationClientOption mLocationOption = null;
 
+    private MarkerOptions markerOption;
+    private OnMapClickListener mClickListener;
+    private OnCameraChangeListener cameraChangeListener;
+    private TextView mTapTextView;
+    double latitude;
+    double longitude;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,6 +65,7 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
         mapView.onCreate(savedInstanceState);
         if (aMap == null) {
             aMap = mapView.getMap();
+            aMap.setOnMapClickListener(this);
         }
         // 设置定位监听
         aMap.setLocationSource(this);
@@ -56,6 +74,8 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
         tvContent =rootView.findViewById(R.id.tv_content0);
         initLocation();
         checkingAndroidVersion();
+        // 改变缩放级别
+        CameraUpdate mCameraUpdate = CameraUpdateFactory.zoomTo(15);
         return rootView;
     }
 
@@ -184,5 +204,17 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
             mLocationClient.onDestroy();
         }
         mLocationClient = null;
+    }
+    
+    @Override
+    public void onMapClick(LatLng latLng) {
+        //点击地图后清理图层插上图标，在将其移动到中心位置
+        aMap.clear();
+        latitude = latLng.latitude;
+        longitude = latLng.longitude;
+        MarkerOptions otMarkerOptions = new MarkerOptions();
+        otMarkerOptions.position(latLng);
+        aMap.addMarker(otMarkerOptions);
+        aMap.moveCamera(CameraUpdateFactory.changeLatLng(latLng));
     }
 }
