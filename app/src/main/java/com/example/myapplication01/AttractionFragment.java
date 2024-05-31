@@ -1,17 +1,24 @@
 package com.example.myapplication01;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.Manifest;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,70 +30,72 @@ import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
 
+import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.LatLngBounds;
+import com.amap.api.maps2d.model.Marker;
+import com.amap.api.maps2d.model.MarkerOptions;
+import com.amap.api.maps2d.model.Text;
+import com.amap.api.maps2d.model.TextOptions;
+import com.amap.api.maps2d.AMap.OnMapClickListener;
+import com.amap.api.maps2d.CameraUpdate;
+
+import com.amap.api.maps2d.AMap.OnCameraChangeListener;
+import com.amap.api.maps2d.CameraUpdateFactory;
+
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class AttractionFragment extends Fragment implements AMapLocationListener,LocationSource{
+public class AttractionFragment extends Fragment implements
+        AMapLocationListener,LocationSource, OnMapClickListener,
+        AMap.InfoWindowAdapter,AMap.OnInfoWindowClickListener{
     MapView mapView = null;
     AMap aMap;
     private LocationSource.OnLocationChangedListener mListener;
-    private TextView tvContent;
     private static final int REQUEST_PERMISSIONS = 9527;
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     //声明AMapLocationClientOption对象
     public AMapLocationClientOption mLocationOption = null;
-
+    private MarkerOptions markerOption;
+    private OnMapClickListener mClickListener;
+    private OnCameraChangeListener cameraChangeListener;
+    private TextView mTapTextView;
+    double latitude;
+    double longitude;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_attraction, container, false);
-        mapView = (MapView) rootView.findViewById(R.id.amapView0);
-        // 在fragment执行onCreateView时执行mMapView.onCreate(savedInstanceState)，创建地图
-        mapView.onCreate(savedInstanceState);
-        if (aMap == null) {
-            aMap = mapView.getMap();
-        }
-        // 设置定位监听
-        aMap.setLocationSource(this);
-        // 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
-        aMap.setMyLocationEnabled(true);
-        tvContent =rootView.findViewById(R.id.tv_content0);
+        initMap(savedInstanceState,rootView);
         initLocation();
         checkingAndroidVersion();
+        CameraUpdate mCameraUpdate = CameraUpdateFactory.zoomTo(15);
         return rootView;
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         // 在fragment执行onDestroy时执行mMapView.onDestroy()，销毁地图
         mapView.onDestroy();
     }
-
     @Override
     public void onResume() {
         super.onResume();
         // 在fragment执行onResume时执行mMapView.onResume()，重新绘制加载地图
         mapView.onResume();
     }
-
     @Override
     public void onPause() {
         super.onPause();
         // 在fragment执行onPause时执行mMapView.onPause()，暂停地图的绘制
         mapView.onPause();
     }
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // 在fragment执行onSaveInstanceState时执行mMapView.onSaveInstanceState(outState)，保存地图当前的状态
         mapView.onSaveInstanceState(outState);
     }
-
     private void checkingAndroidVersion() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             //Android6.0及以上先获取权限再定位
@@ -151,10 +160,7 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
                 //地址
                 String address = aMapLocation.getAddress();
                 Log.d("Location", "定位成功，地址：" + address);
-                tvContent.setText(address == null ? "无地址" : address);
-
                 mLocationClient.startLocation();
-
                 if(mListener!=null){
                     mListener.onLocationChanged(aMapLocation);
                 }
@@ -166,8 +172,6 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
             }
         }
     }
-
-
     @Override
     public void activate(OnLocationChangedListener onLocationChangedListener) {
         mListener = onLocationChangedListener;
@@ -175,7 +179,6 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
             mLocationClient.startLocation();//启动定位
         }
     }
-
     @Override
     public void deactivate() {
         mListener = null;
@@ -184,5 +187,158 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
             mLocationClient.onDestroy();
         }
         mLocationClient = null;
+    }
+    private void initMap(Bundle savedInstanceState,View rootView) {
+        mapView = (MapView) rootView.findViewById(R.id.amapView0);
+        // 在fragment执行onCreateView时执行mMapView.onCreate(savedInstanceState)，创建地图
+        mapView.onCreate(savedInstanceState);
+        if (aMap == null) {
+            aMap = mapView.getMap();
+            addMarkersToMap();
+            // 设置定位监听
+            aMap.setLocationSource(this);
+            // 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
+            aMap.setMyLocationEnabled(true);
+            aMap.setInfoWindowAdapter(this);
+            aMap.setOnInfoWindowClickListener(this);
+        }
+    }
+    @Override
+    public void onMapClick(LatLng latLng) {
+        //点击地图后清理图层插上图标，在将其移动到中心位置
+        aMap.clear();
+        latitude = latLng.latitude;
+        longitude = latLng.longitude;
+        MarkerOptions otMarkerOptions = new MarkerOptions();
+        otMarkerOptions.position(latLng);
+        aMap.addMarker(otMarkerOptions);
+        aMap.moveCamera(CameraUpdateFactory.changeLatLng(latLng));
+    }
+    @Override
+    public View getInfoContents(Marker marker) {
+        View infoContent = getLayoutInflater().inflate(
+                R.layout.custom_info_contents, null);
+        render(marker, infoContent);
+        return infoContent;
+    }
+    @Override
+    public View getInfoWindow(Marker marker) {
+        View infoWindow = getLayoutInflater().inflate(
+                R.layout.custom_info_window, null);
+
+        render(marker, infoWindow);
+        return infoWindow;
+    }
+    private void render(Marker marker, View view) {
+        ((ImageView) view.findViewById(R.id.badge))
+                .setImageResource(R.drawable.icon_city);
+        //修改InfoWindow标题内容样式
+        String title = marker.getTitle();
+        TextView titleUi = ((TextView) view.findViewById(R.id.title));
+        if (title != null) {
+            SpannableString titleText = new SpannableString(title);
+            titleText.setSpan(new ForegroundColorSpan(Color.BLACK), 0,
+                    titleText.length(), 0);
+            titleUi.setTextSize(20);
+            titleUi.setText(titleText+"  ");
+        } else {
+            titleUi.setText("");
+        }
+    }
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        //1、初始化Dialog
+        DetailDialog dialog=new DetailDialog(getContext(),R.style.DialogTheme);
+        //获取Dialogwindow对象
+        Window window=dialog.getWindow();
+        //设置弹出位置
+        window.setGravity(Gravity.BOTTOM);
+        //设置动画
+        window.setWindowAnimations(R.style.dialog_menu_animStyle);
+        //设置对话框大小
+        window.getDecorView().setPadding(0,0,0,0);
+        WindowManager.LayoutParams layoutParams=window.getAttributes();
+        //设置宽度和高度
+        layoutParams.width= WindowManager.LayoutParams.MATCH_PARENT;
+        layoutParams.height=WindowManager.LayoutParams.WRAP_CONTENT;
+        //显示Dialog
+        dialog.show();
+    }
+    private void addMarkersToMap() {
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.xinghu).title("星湖")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.pailou).title("国立武汉大学牌楼")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.mozi).title("墨子雕像")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.lidajiuju).title("李达旧居")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.banshanlu).title("半山庐")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.wenyiduojng).title("闻一多纪念馆")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.jianhu).title("鉴湖")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.luojiaguangchang).title("珞珈广场")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.yinghuacb).title("樱花城堡")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.lidadx).title("李达雕像")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.xingzhenglou).title("行政楼")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.shijigc).title("世纪广场")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.yuehu).title("月湖")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.zhuyuan).title("竹园")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.fengyuan).title("枫园")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.meiyuan).title("梅园")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.songyuan).title("松园")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.zhangzhidongdx).title("张之洞塑像")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.xiaoguishan).title("小龟山")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.lisiguangdx).title("李四光雕像")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.xiajianbai).title("夏坚白雕像")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.luojiashan).title("珞珈山")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.kunpenggc).title("鲲鹏广场")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.wangshijiedx).title("王世杰雕像")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.yingyuan).title("樱园")
+                .snippet("").draggable(false));
     }
 }
