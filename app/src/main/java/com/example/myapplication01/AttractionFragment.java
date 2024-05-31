@@ -31,13 +31,14 @@ import com.amap.api.maps2d.model.Text;
 import com.amap.api.maps2d.model.TextOptions;
 import com.amap.api.maps2d.AMap.OnMapClickListener;
 import com.amap.api.maps2d.CameraUpdate;
+
 import com.amap.api.maps2d.AMap.OnCameraChangeListener;
 import com.amap.api.maps2d.CameraUpdateFactory;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class AttractionFragment extends Fragment implements AMapLocationListener,LocationSource{
+public class AttractionFragment extends Fragment implements AMapLocationListener,LocationSource, OnMapClickListener{
     MapView mapView = null;
     AMap aMap;
     private LocationSource.OnLocationChangedListener mListener;
@@ -208,6 +209,7 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
     }
     
     /*
+
     @Override
     public void onMapClick(LatLng latLng) {
         //点击地图后清理图层插上图标，在将其移动到中心位置
