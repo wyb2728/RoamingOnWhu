@@ -232,12 +232,6 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
                 .position(Constants.mozi).title("墨子雕像")
                 .snippet("").draggable(false));
         aMap.addMarker(new MarkerOptions()
-                .position(Constants.aiyinsitan).title("爱因斯坦雕像")
-                .snippet("").draggable(false));
-        aMap.addMarker(new MarkerOptions()
-                .position(Constants.youyi).title("友谊广场")
-                .snippet("").draggable(false));
-        aMap.addMarker(new MarkerOptions()
                 .position(Constants.lidajiuju).title("李达旧居")
                 .snippet("").draggable(false));
         aMap.addMarker(new MarkerOptions()
@@ -265,16 +259,19 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
                 .position(Constants.shijigc).title("世纪广场")
                 .snippet("").draggable(false));
         aMap.addMarker(new MarkerOptions()
+                .position(Constants.yuehu).title("月湖")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
                 .position(Constants.zhuyuan).title("竹园")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.fengyuan).title("枫园")
                 .snippet("").draggable(false));
         aMap.addMarker(new MarkerOptions()
                 .position(Constants.meiyuan).title("梅园")
                 .snippet("").draggable(false));
         aMap.addMarker(new MarkerOptions()
                 .position(Constants.songyuan).title("松园")
-                .snippet("").draggable(false));
-        aMap.addMarker(new MarkerOptions()
-                .position(Constants.hubin).title("湖滨")
                 .snippet("").draggable(false));
         aMap.addMarker(new MarkerOptions()
                 .position(Constants.zhangzhidongdx).title("张之洞塑像")
@@ -300,6 +297,6 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
         aMap.addMarker(new MarkerOptions()
                 .position(Constants.yingyuan).title("樱园")
                 .snippet("").draggable(false));
-    }    
+    }
     
 }
