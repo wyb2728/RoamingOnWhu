@@ -30,6 +30,8 @@ import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.model.Text;
 import com.amap.api.maps2d.model.TextOptions;
 import com.amap.api.maps2d.AMap.OnMapClickListener;
+import com.amap.api.maps2d.CameraUpdate;
+
 import com.amap.api.maps2d.AMap.OnCameraChangeListener;
 import com.amap.api.maps2d.CameraUpdateFactory;
 
@@ -64,7 +66,8 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
         mapView.onCreate(savedInstanceState);
         if (aMap == null) {
             aMap = mapView.getMap();
-            aMap.setOnMapClickListener(this);
+            // aMap.setOnMapClickListener(this);
+            addMarkersToMap();
         }
         // 设置定位监听
         aMap.setLocationSource(this);
@@ -204,6 +207,8 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
         }
         mLocationClient = null;
     }
+    
+    /*
 
     @Override
     public void onMapClick(LatLng latLng) {
@@ -216,4 +221,84 @@ public class AttractionFragment extends Fragment implements AMapLocationListener
         aMap.addMarker(otMarkerOptions);
         aMap.moveCamera(CameraUpdateFactory.changeLatLng(latLng));
     }
+    */
+    
+    private void addMarkersToMap() {
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.xinghu).title("星湖")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.pailou).title("国立武汉大学牌楼")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.mozi).title("墨子雕像")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.lidajiuju).title("李达旧居")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.banshanlu).title("半山庐")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.wenyiduojng).title("闻一多纪念馆")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.jianhu).title("鉴湖")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.luojiaguangchang).title("珞珈广场")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.yinghuacb).title("樱花城堡")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.lidadx).title("李达雕像")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.xingzhenglou).title("行政楼")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.shijigc).title("世纪广场")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.yuehu).title("月湖")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.zhuyuan).title("竹园")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.fengyuan).title("枫园")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.meiyuan).title("梅园")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.songyuan).title("松园")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.zhangzhidongdx).title("张之洞塑像")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.xiaoguishan).title("小龟山")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.lisiguangdx).title("李四光雕像")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.xiajianbai).title("夏坚白雕像")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.luojiashan).title("珞珈山")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.kunpenggc).title("鲲鹏广场")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.wangshijiedx).title("王世杰雕像")
+                .snippet("").draggable(false));
+        aMap.addMarker(new MarkerOptions()
+                .position(Constants.yingyuan).title("樱园")
+                .snippet("").draggable(false));
+    }
+    
 }
