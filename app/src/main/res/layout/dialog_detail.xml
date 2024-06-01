@@ -19,7 +19,8 @@
                 android:textSize="24sp"
                 android:textStyle="bold"
                 tools:layout_editor_absoluteX="133dp"
-                tools:layout_editor_absoluteY="0dp" />
+                tools:layout_editor_absoluteY="0dp"
+                tools:ignore="MissingConstraints" />
             <ImageView
                 android:id="@+id/image"
                 android:layout_width="150dp"
