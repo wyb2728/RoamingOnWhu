@@ -1,26 +1,20 @@
 package com.example.myapplication01;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.amap.api.maps2d.AMap;
-import com.amap.api.maps2d.MapView;
+import com.example.myapplication01.fragment.AttractionFragment;
+import com.example.myapplication01.fragment.FacilityFragment;
+import com.example.myapplication01.fragment.FoodFragment;
+import com.example.myapplication01.fragment.RadioFragment;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,11 +7,11 @@
     >
     <ImageView
         android:id="@+id/badge"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
         android:scaleType="fitXY"
         android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="5dp"
         >
     </ImageView>
@@ -25,12 +25,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginLeft="-0.6dp"
-            android:layout_marginTop="13dp"
+            android:layout_marginTop="8dp"
             android:ellipsize="end"
             android:gravity="center"
             android:singleLine="true"
             android:textColor="#ff000000"
-            android:textSize="14dp"
+            android:textSize="10dp"
             android:textStyle="bold" />
     </LinearLayout>
 

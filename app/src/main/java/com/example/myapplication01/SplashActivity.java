@@ -1,6 +1,6 @@
 package com.example.myapplication01;
 
-import static com.example.myapplication01.RoundRectImageView.getRoundBitmapByShader;
+import static com.example.myapplication01.util.RoundRectImageView.getRoundBitmapByShader;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,11 +12,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.example.myapplication01.util.CTextView;
 
 public class SplashActivity extends AppCompatActivity {
 
