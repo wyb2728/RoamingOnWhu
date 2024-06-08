@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "fb76+TVvLJh25S+RQQqcnjvG6jh0qiAXx9h1t0fkgQPW06OJ+gHxKF2XoFhFFjk3qbtld0lqesD0QPRYr7od8w==",
+  "success": true,
+  "projectFilePath": "D:\\Tools\\C#\\RoomAPI\\RoomAPI.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\86137\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.27\\microsoft.windowsdesktop.app.ref.6.0.27.nupkg.sha512",
+    "C:\\Users\\86137\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.27\\microsoft.netcore.app.ref.6.0.27.nupkg.sha512",
+    "C:\\Users\\86137\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.27\\microsoft.aspnetcore.app.ref.6.0.27.nupkg.sha512",
+    "C:\\Users\\86137\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.27\\microsoft.netcore.app.host.win-x64.6.0.27.nupkg.sha512"
+  ],
+  "logs": []
+}
