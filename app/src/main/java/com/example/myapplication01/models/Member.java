@@ -1,4 +1,4 @@
-package com.example.myapplication01;
+package com.example.myapplication01.models;
 
 public class Member {
     private String id;

@@ -5,12 +5,17 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
@@ -25,8 +30,9 @@ import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.CameraUpdateFactory;
 
-import com.example.myapplication01.R;
-import com.example.myapplication01.data.Constants;
+import com.example.myapplication01.api.RoomApi;
+import com.example.myapplication01.models.Member;
+import com.example.myapplication01.models.Room;
 
 import java.security.cert.CertificateException;
 import java.util.List;
@@ -65,6 +71,8 @@ public class RoomActivity extends AppCompatActivity implements
     boolean isJoined = false;
 
     private RoomApi roomApi;
+    private Handler handler = new Handler();
+    private Runnable updateMarkersRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +82,7 @@ public class RoomActivity extends AppCompatActivity implements
         OkHttpClient client = getUnsafeOkHttpClient();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://192.168.211.8:5004/")
+                .baseUrl("https://192.168.168.8:5004/")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -85,6 +93,14 @@ public class RoomActivity extends AppCompatActivity implements
         initMap(savedInstanceState);
         initLocation();
         checkingAndroidVersion();
+
+        updateMarkersRunnable = new Runnable() {
+            @Override
+            public void run() {
+                addMarkersToMap();
+                handler.postDelayed(this, 3000);
+            }
+        };
     }
     private OkHttpClient getUnsafeOkHttpClient() {
         try {
@@ -94,11 +110,9 @@ public class RoomActivity extends AppCompatActivity implements
                         @Override
                         public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
                         }
-
                         @Override
                         public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
                         }
-
                         @Override
                         public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                             return new java.security.cert.X509Certificate[]{};
@@ -138,6 +152,7 @@ public class RoomActivity extends AppCompatActivity implements
             mapView.onDestroy();
         }
         leaveRoom();
+        handler.removeCallbacks(updateMarkersRunnable);
     }
 
     @Override
@@ -279,19 +294,37 @@ public class RoomActivity extends AppCompatActivity implements
 
     @Override
     public View getInfoContents(Marker marker) {
-        View infoContent = getLayoutInflater().inflate(R.layout.custom_info_contents, null);
+        View infoContent = getLayoutInflater().inflate(
+                R.layout.custom_info_contents, null);
+        render(marker, infoContent);
         return infoContent;
     }
-
     @Override
     public View getInfoWindow(Marker marker) {
-        View infoWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
+        View infoWindow = getLayoutInflater().inflate(
+                R.layout.custom_info_window, null);
+
+        render(marker, infoWindow);
         return infoWindow;
+    }
+    private void render(Marker marker, View view) {
+        ((ImageView) view.findViewById(R.id.badge))
+                .setImageResource(R.drawable.ic_user);
+        //修改InfoWindow标题内容样式
+        String title = marker.getTitle();
+        TextView titleUi = ((TextView) view.findViewById(R.id.title));
+        if (title != null) {
+            SpannableString titleText = new SpannableString(title);
+            titleText.setSpan(new ForegroundColorSpan(Color.BLACK), 0,
+                    titleText.length(), 0);
+            titleUi.setTextSize(16);
+            titleUi.setText(titleText+"  ");
+        } else {
+            titleUi.setText("");
+        }
     }
 
     private void addMarkersToMap() {
-        //每次添加前将清除原有标点
-        //添加所有成员的位置标点，包括自己的位置
         roomApi.getMembersLocation(key).enqueue(new Callback<List<Member>>() {
             @Override
             public void onResponse(Call<List<Member>> call, Response<List<Member>> response) {
@@ -301,6 +334,7 @@ public class RoomActivity extends AppCompatActivity implements
                         LatLng latLng = new LatLng(member.getLatitude(), member.getLongitude());
                         aMap.addMarker(new MarkerOptions().position(latLng).title(member.getId()));
                     }
+                    showMsg("标点已更新");
                 }
             }
 
@@ -348,6 +382,7 @@ public class RoomActivity extends AppCompatActivity implements
                         isJoined = true;
                         showMsg("成功加入房间!!!!");
                         addMarkersToMap();
+                        handler.post(updateMarkersRunnable); // 开始定时更新标点
                     } else {
                         showMsg("无法加入房间");
                     }

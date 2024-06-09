@@ -1,4 +1,7 @@
-package com.example.myapplication01;
+package com.example.myapplication01.api;
+
+import com.example.myapplication01.models.Member;
+import com.example.myapplication01.models.Room;
 
 import java.util.List;
 
